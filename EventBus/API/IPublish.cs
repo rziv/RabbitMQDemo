@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EventBus
+namespace EventBus.API
 {
-    public interface IRetryPolicy
+    interface IPublish
     {
-        int maxAttempts { get; set; }
-        int interval { get; set; }
+        void Publish();
     }
 }

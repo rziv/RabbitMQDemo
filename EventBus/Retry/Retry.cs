@@ -4,40 +4,11 @@ using System.Threading.Tasks;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace EventBus.Retry
+namespace EventBus
 {
-    public class Retry: IRetry
-    {
-       
-        public void RepublishMessage(IModel channel, BasicDeliverEventArgs deliveryArgs, int interval)
-        {
-
-            int currentAttempt = GetRetryAttempts(deliveryArgs.BasicProperties.Headers) + 1;          
-
-            //Ack original message
-            channel.BasicAck(deliveryArgs.DeliveryTag, false);
-            
-                Task.Run(async delegate
-                {
-                    await Task.Delay(interval);
-                    //Create retry message
-                    var properties = channel.CreateBasicProperties();
-                    properties.Headers = SetRetryAttempts(deliveryArgs.BasicProperties.Headers, currentAttempt);
-
-                    //Publish retry message
-                    channel.BasicPublish(deliveryArgs.Exchange, deliveryArgs.RoutingKey, properties, deliveryArgs.Body);
-                    
-                    Console.WriteLine("--- Process ({0} Subscriber) Error retry Attempt: {1}", deliveryArgs.Exchange, currentAttempt);
-                });   
-        }
-
-        public void RejectMessage(IModel channel, BasicDeliverEventArgs deliveryArgs)
-        {            
-            // reject the message. If a dead letter queue was defined it will go to there (https://www.rabbitmq.com/dlx.html)
-            channel.BasicReject(deliveryArgs.DeliveryTag, false);
-        }
-
-        public int GetRetryAttempts(IDictionary<string, object> Headers)
+    internal static class Retry
+    {          
+        internal static int GetRetryAttempts(IDictionary<string, object> Headers)
         {
             int RetryAttempts = 0;
             var RetryHeader = Configuration.Instance.RetryHeader;
@@ -51,7 +22,7 @@ namespace EventBus.Retry
             return RetryAttempts;            
         }
 
-        private IDictionary<string, object> SetRetryAttempts(IDictionary<string, object> headers, int newAttempts)
+        internal static IDictionary<string, object> SetRetryAttempts(IDictionary<string, object> headers, int newAttempts)
         {
             IDictionary<string, object> newHeaders = CloneMessageHeaders(headers);
             var retryHeader = Configuration.Instance.RetryHeader;
@@ -67,7 +38,7 @@ namespace EventBus.Retry
             return newHeaders;
         }        
 
-        private IDictionary<string, object> CloneMessageHeaders(IDictionary<string, object> existingHeaders)
+        internal static IDictionary<string, object> CloneMessageHeaders(IDictionary<string, object> existingHeaders)
         {
             var newHeaders = new Dictionary<string, object>();
             if (existingHeaders != null)
@@ -81,7 +52,7 @@ namespace EventBus.Retry
             return newHeaders;
         }
 
-        public bool ShouldRejectMessage(BasicDeliverEventArgs deliveryArgs, int maxRetryAttempts)
+        internal static bool ShouldRejectMessage(BasicDeliverEventArgs deliveryArgs, int maxRetryAttempts)
         {
             int nextAttempt = GetRetryAttempts(deliveryArgs.BasicProperties.Headers) + 1;
 

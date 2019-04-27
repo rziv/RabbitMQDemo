@@ -48,8 +48,8 @@ namespace GlobalStorage
         _factory = new ConnectionFactory { HostName = Configuration.Instance.HostName, UserName = Configuration.Instance.UserName, Password = Configuration.Instance.Password };
         _connection = _factory.CreateConnection();
         _model = _connection.CreateModel();
-        _model.ExchangeDeclare(ExchangeName, "direct",true);
-        _model.ExchangeDeclare(Configuration.Instance.DeadLetterExchangeName, "fanout", true);
+        _model.ExchangeDeclare(ExchangeName, ExchangeType.Direct,true);
+        _model.ExchangeDeclare(Configuration.Instance.DeadLetterExchangeName,ExchangeType.Fanout, true);
         IDictionary<string, object> args = new Dictionary<string, object>();
         args.Add("x-dead-letter-exchange", Configuration.Instance.DeadLetterExchangeName);
         _model.QueueDeclare(ProcessStatisticsQueueName, true, false, false, args);

@@ -3,6 +3,7 @@ using EventBus.EventModels;
 using EventBus.Retry;
 using EventBus.API;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 using System;
 
 namespace FormsManager
@@ -15,7 +16,7 @@ namespace FormsManager
 
         static void Main(string[] args)
         {
-            var QueueName = Configuration.Instance.ProcessFormsManagerQueueName;
+            var QueueName = Configuration.Instance.ProcessFormsManagerQueueName;           
             RetryPolicy retryPolicy = new RetryPolicy(maxAttempts, interval);
             Retry retry = new Retry();
 
@@ -23,12 +24,11 @@ namespace FormsManager
             {
                 using (var channel = _connection.CreateModel())
                 {
-                    var consumer = new QueueingBasicConsumer(channel);
-                    channel.BasicConsume(QueueName, false, consumer);
-
-                    while (true)
+                    var consumer = new EventingBasicConsumer(channel);
+                    BasicDeliverEventArgs eventMessage;
+                    consumer.Received += (ch, ea) =>
                     {
-                        var eventMessage = consumer.Queue.Dequeue();
+                        eventMessage = ea;
                         try
                         {
                             var process = (Process)eventMessage.Body.DeSerialize(typeof(Process));
@@ -40,9 +40,9 @@ namespace FormsManager
                             Console.WriteLine("--- Process (Statistics Subscriber) - Routing Key <{0}> : {1} : {2}", routingKey, process.ServiceName, process.Data);
                             channel.BasicAck(eventMessage.DeliveryTag, false);
                         }
-                        catch (Exception ex)
+                        catch (Exception)
                         {
-                            Console.WriteLine(ex.ToString());
+
                             if (retry.ShouldRejectMessage(eventMessage, retryPolicy.maxAttempts))
                             {
                                 retry.RejectMessage(channel, eventMessage);
@@ -51,10 +51,13 @@ namespace FormsManager
                             {
                                 retry.RepublishMessage(channel, eventMessage, retryPolicy.interval);
                             }
-
                         }
-                    }
+
+                    };
+                    String consumerTag = channel.BasicConsume(QueueName, false, consumer);
+                    Console.ReadLine();
                 }
+
             }
         }
     }

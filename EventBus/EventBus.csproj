@@ -66,6 +66,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="API\Connection.cs" />
+    <Compile Include="API\Broker.cs" />
+    <Compile Include="API\IMessage.cs" />
+    <Compile Include="API\IPublish.cs" />
+    <Compile Include="API\ISubscribe.cs" />
+    <Compile Include="API\MessageEventArgs.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="EventModels\Process.cs" />
     <Compile Include="Retry\IRetry.cs" />

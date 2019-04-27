@@ -1,10 +1,10 @@
 ﻿using RabbitMQ.Client;
 
-namespace EventBus.API
+namespace EventBus
 {
-    public static class Connection
+    internal static class Connection
     {
-        public static IConnection GetConnection()
+        internal static IConnection GetConnection()
         {
             var factory = new ConnectionFactory
             {

@@ -56,7 +56,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Common\EventBus.csproj">
+    <ProjectReference Include="..\EventBus\EventBus.csproj">
       <Project>{7fe3db48-6952-4c56-9526-6b204a5d0e32}</Project>
       <Name>EventBus</Name>
     </ProjectReference>
