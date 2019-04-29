@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EventBus.API
+namespace EventBus
 {
-    interface IPublish
+    public interface ISubscribe
     {
-        void Publish();
+        void Subscribe(EventHandler<MessageEventArgs> subscriber);
     }
 }

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace EventBus
+namespace EventBus.RabbitMQ
 {
     internal static class Retry
     {          

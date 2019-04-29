@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventBus", "..\EventBus\Eve
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FormsManagerSubscriber", "..\FormsManagerSubscriber\FormsManagerSubscriber.csproj", "{9D154459-C91B-4781-8E7F-177E295858AE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Setup", "..\Setup\Setup.csproj", "{1594602B-9186-4561-9531-F33964930D25}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{9D154459-C91B-4781-8E7F-177E295858AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9D154459-C91B-4781-8E7F-177E295858AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9D154459-C91B-4781-8E7F-177E295858AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1594602B-9186-4561-9531-F33964930D25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1594602B-9186-4561-9531-F33964930D25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1594602B-9186-4561-9531-F33964930D25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1594602B-9186-4561-9531-F33964930D25}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

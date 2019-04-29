@@ -1,18 +1,14 @@
 ﻿using System;
-using RabbitMQ.Client;
 using EventBus;
+using EventBus.Serialization;
 using EventBus.EventModels;
+using EventBus.RabbitMQ;
 using System.Collections.Generic;
 
 namespace GlobalStorage
 {
     class Program
     {
-        private static ConnectionFactory _factory;
-        private static IConnection _connection;
-        private static IModel _model;      
-
-
         static void Main()
         {   
             var process1 = new Process { ProcessId = new Guid(), CreationDate = DateTime.Now, EventActionType = EventActionType.Created, ServiceName="dr1@moin.gov.il", Data = "{\"firstName\": \"Avi\", \"lastName\":\"Cohen\"}" };
@@ -21,49 +17,26 @@ namespace GlobalStorage
             var process4 = new Process { ProcessId = new Guid(), CreationDate = DateTime.Now, EventActionType = EventActionType.Created, ServiceName = "GeneralRequest@rbc.gov.il", Data = String.Empty };
             var process5 = new Process { ProcessId = new Guid(), CreationDate = DateTime.Now, EventActionType = EventActionType.Created, ServiceName = "GeneralRequest@rbc.gov.il", Data = "{\"country\": \"England\", \"RequestType\":\"Marriage\"}" };
 
+            string ExchangeName = Configuration.Instance.ProcessExchangeName;
+            IEventBus broker = new Broker(ExchangeName);
 
-            CreateConnection();
-
-            SendProcess(process1);
-            SendProcess(process2);
-            SendProcess(process3);
-            SendProcess(process4);
-            SendProcess(process5);
+            SendProcess(process1, broker);
+            SendProcess(process2, broker);
+            SendProcess(process3, broker);
+            SendProcess(process4, broker);
+            SendProcess(process5, broker);
         }
 
-        private static void SendProcess(Process process)
+        private static void SendProcess(Process process, IEventBus broker)
         {
-            SendMessage(process.Serialize(), "FormsManager");
-            SendMessage(process.Serialize(), "Statistics");
+            SendMessage(process.Serialize(),Configuration.Instance.ProcessFormsManagerRoutingName, broker);
+            SendMessage(process.Serialize(), Configuration.Instance.ProcessStatisticsRoutingName, broker);
             Console.WriteLine(" Process Sent {0}, {1}", process.ServiceName, process.Data); 
-        }        
-
-        private static void CreateConnection()
-        {
-        //TODO: All this setup shoold be moved to script and run once as part of the CI-CD
-        //Implementation - powershell script that is executed with a bat file.
-         var ExchangeName = Configuration.Instance.ExchangeName;
-         var ProcessFormsManagerQueueName = Configuration.Instance.ProcessFormsManagerQueueName;
-         var ProcessStatisticsQueueName = Configuration.Instance.ProcessStatisticsQueueName;
-        _factory = new ConnectionFactory { HostName = Configuration.Instance.HostName, UserName = Configuration.Instance.UserName, Password = Configuration.Instance.Password };
-        _connection = _factory.CreateConnection();
-        _model = _connection.CreateModel();
-        _model.ExchangeDeclare(ExchangeName, ExchangeType.Direct,true);
-        _model.ExchangeDeclare(Configuration.Instance.DeadLetterExchangeName,ExchangeType.Fanout, true);
-        IDictionary<string, object> args = new Dictionary<string, object>();
-        args.Add("x-dead-letter-exchange", Configuration.Instance.DeadLetterExchangeName);
-        _model.QueueDeclare(ProcessStatisticsQueueName, true, false, false, args);
-        _model.QueueDeclare(ProcessFormsManagerQueueName, true, false, false, null);
-        _model.QueueDeclare(Configuration.Instance.DeadLetterQueueName, true, false, false, null);
-        _model.QueueBind(ProcessFormsManagerQueueName, ExchangeName, "FormsManager");
-        _model.QueueBind(ProcessStatisticsQueueName, ExchangeName, "Statistics");
-        _model.QueueBind(Configuration.Instance.DeadLetterQueueName, Configuration.Instance.DeadLetterExchangeName, "DeadLetter");
         }
 
-        private static void SendMessage(byte[] message, string routingKey)
+        private static void SendMessage(byte[] message, string routingKey, IEventBus broker)
         {
-            var ExchangeName = Configuration.Instance.ExchangeName;
-            _model.BasicPublish(ExchangeName, routingKey, null, message);          
+            broker.Publish(message, routingKey);                     
         }
-    }
+    } 
 }

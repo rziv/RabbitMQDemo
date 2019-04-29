@@ -1,5 +1,7 @@
 ﻿using EventBus;
+using EventBus.RabbitMQ;
 using EventBus.EventModels;
+using EventBus.Serialization;
 using System;
 
 namespace Statistics.Subscriber
@@ -11,9 +13,10 @@ namespace Statistics.Subscriber
 
         static void Main(string[] args)
         {
+            string ExchangeName = Configuration.Instance.ProcessExchangeName;
             string QueueName = Configuration.Instance.ProcessStatisticsQueueName;
             RetryPolicy retryPolicy = new RetryPolicy(maxAttempts, interval);
-            Broker broker = new Broker(QueueName);
+            IEventBus broker = new Broker(ExchangeName, QueueName);
 
             void HandleProcessMessage(object sender, MessageEventArgs messageEventArgs)
             {
@@ -26,7 +29,7 @@ namespace Statistics.Subscriber
                     }
                    
                     Console.WriteLine("--- Process (Statistics Subscriber) - {0} : {1}", process.ServiceName, process.Data);
-                    broker.Approve(messageEventArgs);
+                    broker.ApproveMessage(messageEventArgs);
                 }
                 catch (Exception ex)
                 {

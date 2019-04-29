@@ -4,12 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EventBus.API
+namespace EventBus
 {
-    interface IMessage
+    public interface IPublish
     {
-        void Approve();
-        void Reject();
-        void Retry();
+        void Publish(byte[] message, string RoutingKey);
     }
 }

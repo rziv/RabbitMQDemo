@@ -1,10 +1,9 @@
-﻿using System;
-using RabbitMQ.Client.Events;
+﻿using RabbitMQ.Client.Events;
 
 
 namespace EventBus
 {
-    public class MessageEventArgs: BasicDeliverEventArgs
+    public class MessageEventArgs: BasicDeliverEventArgs, IMessageEventArgs
     {
         //public new byte[] Body { get; set; }
 

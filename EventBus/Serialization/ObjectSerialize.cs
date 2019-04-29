@@ -2,7 +2,7 @@
 using System.Text;
 using Newtonsoft.Json;
 
-namespace EventBus
+namespace EventBus.Serialization
 {
     public static class ObjectSerialize
     {
