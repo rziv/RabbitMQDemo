@@ -1,10 +1,9 @@
 ﻿using EventBus;
 using EventBus.RabbitMQ;
-using EventBus.EventModels;
 using EventBus.Serialization;
 using System;
 
-namespace Statistics.Subscriber
+namespace StatisticsSubscriber
 {
     class Program
     {
@@ -22,7 +21,7 @@ namespace Statistics.Subscriber
             {
                 try
                 {
-                    var process = (Process)messageEventArgs.Body.DeSerialize(typeof(Process));
+                    var process = (ProcessEventModel)messageEventArgs.Body.DeSerialize(typeof(ProcessEventModel));
                     if (String.IsNullOrEmpty(process.Data))
                     {
                         throw new Exception("Missing process Data");

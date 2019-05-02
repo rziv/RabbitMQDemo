@@ -1,16 +1,13 @@
 ﻿using EventBus;
-using EventBus.EventModels;
 using EventBus.Serialization;
 using EventBus.RabbitMQ;
 using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
 using System;
 
 namespace FormsManager
 {
     class Program
-    {
-        private static IConnection _connection;
+    {       
         private const int maxAttempts = 4;
         private const int interval = 4000;
 
@@ -25,7 +22,7 @@ namespace FormsManager
             {
                 try
                 {
-                    var process = (Process)messageEventArgs.Body.DeSerialize(typeof(Process));
+                    var process = (ProcessEventModel)messageEventArgs.Body.DeSerialize(typeof(ProcessEventModel));
                     if (String.IsNullOrEmpty(process.Data))
                     {
                         throw new Exception("Missing process Data");

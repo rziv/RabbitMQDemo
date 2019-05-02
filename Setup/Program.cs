@@ -5,13 +5,13 @@ using EventBus.RabbitMQ;
 
 namespace Setup
 {
+
+    //TODO: All this setup shoold be moved to script and run once as part of the CI-CD
+    //Implementation - powershell script that is executed with a bat file.
     class Program
     {
         static void Main(string[] args)
-        {
-           
-                //TODO: All this setup shoold be moved to script and run once as part of the CI-CD
-                //Implementation - powershell script that is executed with a bat file.
+        {           
                 var ExchangeName = Configuration.Instance.ProcessExchangeName;
                 var ProcessFormsManagerQueueName = Configuration.Instance.ProcessFormsManagerQueueName;
                 var ProcessStatisticsQueueName = Configuration.Instance.ProcessStatisticsQueueName;

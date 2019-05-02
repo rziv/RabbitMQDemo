@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EventBus.EventModels
+namespace EventBus
 {
    
     public enum EventActionType
